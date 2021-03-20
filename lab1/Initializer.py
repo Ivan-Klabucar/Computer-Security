@@ -18,10 +18,6 @@ class Initializer:
             else:
                 print('Aborting...')
                 return
-        
-        salt = get_random_bytes(16)
-        with open('./files/config', 'wb') as config_file:
-            config_file.write(salt)
 
         with open('./files/passwords', 'wb') as password_file:
             initial_contents = b'fun\x0chejhejdeckotigay\n'

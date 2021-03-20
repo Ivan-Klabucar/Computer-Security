@@ -14,18 +14,23 @@ def which_action(argv, master_password):
     elif action == 'get':
         address = argv[3]
         passwords = Passwords(master_password)
-        requested_pass = passwords.get_password_for(address)
-        if requested_pass:
-            print(f"Password for {argv[3]}: {requested_pass}")
-        else:
-            print("No password for that address")
+        try:
+            requested_pass = passwords.get_password_for(address)
+            if requested_pass:
+                print(f"Password for {argv[3]}: {requested_pass}")
+            else:
+                print("No password for that address")
+        except Exception as e:
+            print(e)
     elif action == 'put':
         address = argv[3]
         password = argv[4]
         passwords = Passwords(master_password)
-        passwords.put_password_for(address, password)
-        print(f"Stored password for {address}")
-
+        try:
+            passwords.put_password_for(address, password)
+            print(f"Stored password for {address}")
+        except Exception as e:
+            print(e)
 
 
 if len(sys.argv) < 2:
