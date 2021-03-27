@@ -1,0 +1,13 @@
+Skripta tajnik.py treba se izvršavati sa verzijom Python3.x
+
+Način izvršavanja:
+
+python3 tajnik.py <naredba> <Master password> <adresa> [<šifra>]
+
+<naredba> može biti: init, get, ili put
+<Master password>: tajna šifra
+<adresa>: bilo kakav niz ispisivih ASCII znakova, dakle ascii kodovi [33,126]
+<šifra>: bilo kakav niz ispisisvih ASCII znakova, dakle ascii kodovi [33,126], <šifra> je potrebna samo u naredbi put
+
+Ako se tajnik inicijlizira naredbom init više od jednom, sve postojeće šifre će biti pobrisane i krenut će se ispočetka.
+

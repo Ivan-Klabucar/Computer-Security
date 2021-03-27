@@ -1,6 +1,6 @@
 Opis zaštite povjerljivosti zaporki:
 
-Sigurnost sustava počiva na glavnoj zaporki koja je poznata samo osobi koja je inicijalizirala tajnik. Ta zaporka mora se navesti svaki put kada se koristi tajnik da bi se mogla dekriptirati datoteka passwords u kojoj se nalaze parovi (adresa, lozinka). Ta datoteka enkriptirana je algoritmom AES u CBC modu, a ključ korišten za to deriviranje generiran je na temelju glavne zaporke te nasumičnog niza od 16 bajtova tzv "salt". Konkretno, generiran je funkcijom scrypt (key derivation function). 
+Sigurnost sustava počiva na glavnoj zaporki koja je poznata samo osobi koja je inicijalizirala tajnik. Ta zaporka mora se navesti svaki put kada se koristi tajnik da bi se mogla dekriptirati datoteka passwords u kojoj se nalaze parovi (adresa, lozinka). Ta datoteka enkriptirana je algoritmom AES u CBC modu, a ključ korišten za to deriviran je na temelju glavne zaporke te nasumičnog niza od 16 bajtova tzv "salt". Konkretno, generiran je funkcijom scrypt (key derivation function). 
 
 Nakon svake izmjene informacija u datoteci passwords, dakle nakon svake PUT operacije, generira se novi AES ključ sa različitom, novoodabranom "soli", te se s njim datoteka enkriptira. Sol korištena za derivaciju AES ključa nalazi se u datoteci config, koja se ažurira pri svakom novom odabiru soli. Razlog tome je što je ta sol potrebna za generiranje AES ključa prilikom sljedeće operacije u svrhu dekriptiranja.
 

@@ -8,16 +8,16 @@ class Passwords:
  
     def decrypt_to_plaintext(self):
         decryptor = Decryptor(self.master_password)
-        plaintext_passwords = decryptor.decrypt().decode("utf-8")
+        plaintext_passwords = decryptor.decrypt().decode("utf-8").strip()
         return plaintext_passwords.split('\n')
     
     def get_password_for(self, address):
         plaintext_passwords = self.decrypt_to_plaintext()
         for entry in plaintext_passwords:
-            if entry == '': break # End of file
-            curr_addr, curr_pass = entry.split(chr(12)) # chr(12) delimiter adrese i sifre
-            if curr_addr == address:
-                return curr_pass
+            if not entry == '':
+                curr_addr, curr_pass = entry.split(chr(12)) # chr(12) delimiter adrese i sifre
+                if curr_addr == address:
+                    return curr_pass
         return None
     
     def put_password_for(self, address, password):

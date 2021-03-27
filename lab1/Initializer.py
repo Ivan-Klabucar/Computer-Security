@@ -20,7 +20,7 @@ class Initializer:
                 return
 
         with open('./files/passwords', 'wb') as password_file:
-            initial_contents = b'fun\x0chejhejdeckotigay\n'
+            initial_contents = b'\n'
             encryptor = Encryptor(self.master_password)
             encryptor.encrypt_file_AES_CBC(initial_contents, dest=password_file)
             
