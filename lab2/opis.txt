@@ -1,17 +1,29 @@
-Opis zaštite povjerljivosti zaporki:
+Sustav se temelji na datoteci passwords u kojoj su zapisani tuplovi (username, hash vrijednost, salt). Hash vrijednost se računa preko kriptografske funkcije sažetka SHA3_256 iz biblioteke pycryptodome na temelju user-ove lozinke konkatenirane s slučajnom vrijednost 'salt' od 16 bajtova. Tih 16 bajtova je također generiano na kriptografski siguran način metodom get_random_bytes iz pycrytodome. Pri svakoj promjeni lozinke, računa se novi salt te nova hash vrijednost. 
 
-Sigurnost sustava počiva na glavnoj zaporki koja je poznata samo osobi koja je inicijalizirala tajnik. Ta zaporka mora se navesti svaki put kada se koristi tajnik da bi se mogla dekriptirati datoteka passwords u kojoj se nalaze parovi (adresa, lozinka). Ta datoteka enkriptirana je algoritmom AES u CBC modu, a ključ korišten za to deriviran je na temelju glavne zaporke te nasumičnog niza od 16 bajtova tzv "salt". Konkretno, generiran je funkcijom scrypt (key derivation function). 
+User se uspješno ulogira u sustav alatom login ako se vrijednost sažetka unešene lozinke konkatenirane s zapisanim saltom podudara sa vrijednosti sažetka iz datoteke passwords.
+Forsiranje promjene lozinke implementirano je tako da se u datoteci zapis dotičnog user-a označi sa zastavicom koja sustavu govori da forsira promjenu lozinke prilikom sljedećeg uspješnog logina (tom prilikom se ta zastavica i briše iz datoteke)
 
-Nakon svake izmjene informacija u datoteci passwords, dakle nakon svake PUT operacije, generira se novi AES ključ sa različitom, novoodabranom "soli", te se s njim datoteka enkriptira. Sol korištena za derivaciju AES ključa nalazi se u datoteci config, koja se ažurira pri svakom novom odabiru soli. Razlog tome je što je ta sol potrebna za generiranje AES ključa prilikom sljedeće operacije(get ili put) u svrhu dekriptiranja.
+Zaštite navedene na predavanjima, te jesam li ih implementirao ili ne:
 
-Opis zaštite itegriteta:
+- Na disk se pohranjuju slučajna vrijednost i rezultat kriptografske funkcije
+sažetka od (lozinka + slučajna vrijednost)
 
-Prilikom svakog generiranja AES ključa, zapravo se istim postupkom generira još jedan ključ koji se koristi za kreiranje HMAC koda za integritet podataka. Temeljem tog drugog ključa nakon svake enkripcije datoteke passwords se za nju također kreira HMAC kod, koji se onda verificira pri svakom pristupu datoteci passwords (dakle na početku i operacije PUT i operacije GET). HMAC kod se generia na temelju enkriptiranih podataka, ne plaintextu, te se pohranjuje u datoteku integrity. Ukoliko vefikikacija ne uspije, započeta operacija se obustavlja, te se ispisuje odgovarajuća poruka.
+Ovu zaštitu jesam implementirao, jer kako datoteka passwords može dopasti u ruke napadača jako je bitno da bude virtualno nemoguće doći do lozinki preko onog što se nalazi u toj datoteci. Kako su kriptografske funkcije sažetka "one way only", na temelju njihove vrijednosti jako je teško išta reći o početnoj vrijednosti, što je za ovu primjenu točno ono što trebamo. Slučajnu vrijednost ili salt ovdije koristimo kako napadač ne bi mogao preko "rainbow tables" uspjeti povezati hash vrijednosti s čestim lozinkama. Zbog korištenja salta taj napad nije moguć jer bi to značilo da bi za svaku lozinku koju želi isprobati morao izračunati hash vrijednosti sa svim mogućim kombinacijama salt vrijednosti. Korištenje slučajne vrijednosti također napadaču onemogućava da sazna koji korisnici imaju jednake lozinke.
 
-Opis sigurnosnih zahtjeva:
+- Forsiranje lozinki određene minimalne kompleksnosti 
 
-- Povjerljivost zaporki: napadač ne može odrediti nikakve informacije o zaporkama jer nas od toga štite svojsta AES CBC algoritma. Također kako se pri svakoj enkripciji datoteke passwords koristi drukčiji ključ, usporedbom s prijašnjim verzijama ne može se ništa zaključiti o trenutnom stanju datoteke. Ne može se otkriti niti duljina jer je svaka šifra produljena s nasumičnim znakovima do maksimalne duljine prije enkriptiranja.
+Ovu zaštitu sam isto do jedne mjere implementirao, naime sustav se buni ako se pokuša postaviti lozinka kraća od 3 znaka. Inače bi forsirao i više znakova ali mislim da je vama lakše testirati ako ne morate smisljati dugačke lozinke. Ako se mogu postaviti jako kratke lozinke to bi značilo da napadač mora isprobati malo kombinacija da sazna stvarnu lozinku nekog korisnika.
 
-- Povjerljivost adresa: napadač ne može odrediti nikakve informacije o adresama, iz istih razloga koji su navedeni u prošloj točci.
+- Nakon svakog neuspjelog pokušaja upisivanja lozinke povećava se vrijeme
+čekanja
 
-- Integritet adresa i zaporki: nije moguće da korisnik dobije od alata zaporku za određenu adresu, ako prethodno nije unio točno tu zaporku za točno tu adresu jer se integrirtet cijele datoteke passwords štiti HMAC kodom, dakle bilo kakva izmjena datoteke passwords bi uzrokovalo zatajenje u vefifikaciji prilikom sljedećeg pokušaja čitanja datoteke. Od napada zamjene smo zaštičeni ne samo HMAC kodom, već i primjenom ulančavanja u modu CBC AES algoritma, što spriječava napadača od proizvoljnog premještanja blokova enkriptirane datoteke.
+Ovo nisam implementirao jer u zadatku piše da pretpostavimo da će alat login koristiti samo legitimni korisnici koji neće zlouporabiti alat. U prijevodu to znači da se ne moramo brinuti o tome da napadač pokušava nekome pogoditi lozinku online, već samo offline.
+
+- Nakon određenog broja neuspjelih pokušaja korisnik se blokira, korisnički
+račun se zaključava, generira se upozorenje vlasniku sustava
+
+Ovo nisam implementirao iz istog razloga koji je naveden i za zaštitu iznad, te dodatno zato što to otvara mogućnost DoS napada na nekog korisnika.
+
+- Administrator može forsirati zamjenu lozinke
+
+implementirano jer tako i napisano u zadatku.

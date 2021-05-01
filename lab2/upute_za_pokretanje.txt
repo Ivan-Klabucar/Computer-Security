@@ -1,10 +1,12 @@
 Rjesenje je pisano u python-u, potreban je python 3.8 prevoditelj i biblioteka pycryptodome.
-Inicijaliziramo bazu na sljedeci nacin:
-- python3 tajnik.py init masterPassword
-Dodajemo zaporuku na sljedeci nacin:
-- python3 tajnik.py put masterPassword www.fer.hr zaporka
-Dohvacamo zaporuku na sljedeci nacin:
-- python3 tajnik.py get masterPassword www.fer.hr
 
-Ako se tajnik inicijlizira naredbom init više od jednom, sve postojeće šifre će biti pobrisane i krenut će se ispočetka.
+Alat usermgmt koristimo ovako:
+  Dodavanje novog usera:
+	- python3 usermgmt.py add username
+  Mjenjanje zaporuke usera:
+	- python3 usermgmt.py passwd username
+  Forsiramo mjenjanje zaporke na sljedecm loginu:
+	- python3 usermgmt.py forcepass username
+  Brišemo usera:
+	- python3 usermgmt.py del username
 

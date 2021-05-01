@@ -1,10 +1,15 @@
 from HelperFunctions import *
 
 class Users:
+    def is_long_pass(self, passwd):
+        if not passwd: return False
+        if len(passwd) < 3: return False
+        return True
+
     def add_usr_pass(self, user):
         hpass_dict = load_hpasswords()
         passwd = get_double_pass()
-        if not passwd: return False
+        if not is_long_pass(passwd): return False
         hpass_dict[user] = hash_pass_with_salt(passwd, get_salt())
         store_hpasswords(hpass_dict)
         return True
@@ -23,11 +28,11 @@ class Users:
     
     def new_password(self, user, new_p):
         hpass_dict = load_hpasswords()
-        if user in hpass_dict:
+        if user in hpass_dict and self.is_long_pass(new_p):
             hpass_dict[user] = hash_pass_with_salt(new_p, get_salt())
             store_hpasswords(hpass_dict)
         else:
-            print('No such user.')
+            print('No such user or password too short.')
     
     def force_pass_change(self, user):
         hpass_dict = load_hpasswords()
