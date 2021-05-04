@@ -10,3 +10,7 @@ Alat usermgmt koristimo ovako:
   Brišemo usera:
 	- python3 usermgmt.py del username
 
+Alat login koristimo ovako:
+  prijava u sustav:
+	- python3 login.py username
+

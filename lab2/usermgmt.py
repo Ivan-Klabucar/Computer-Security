@@ -21,6 +21,8 @@ def which_action(action, user):
         users.force_pass_change(user)
     elif action == 'del':
         users.remove(user)
+    else:
+        print('Unrecognized action.')
 
 
 if len(sys.argv) < 3:

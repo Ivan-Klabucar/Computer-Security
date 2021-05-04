@@ -1,5 +1,5 @@
 from Crypto.Random import get_random_bytes
-from Crypto.Hash import SHA3_256
+from Crypto.Protocol.KDF import scrypt
 import getpass
 
 def load_hpasswords():
@@ -29,16 +29,15 @@ def get_salt():
     return get_random_bytes(16)
 
 def get_hash(passwd, salt):
-    h_obj = SHA3_256.new()
-    h_obj.update(passwd.encode() + salt)
-    return h_obj.hexdigest()
+    key = scrypt(passwd.encode(), salt, 16, N=2**14, r=8, p=1)
+    return str(key)
 
 def hash_pass_with_salt(passwd, salt):
     return get_hash(passwd, salt) + 'Partition 1' + str(salt)
 
 def get_pass_and_salt(user):
     hpass_dict = load_hpasswords()
-    if not user in hpass_dict: raise Exception('No such user.')
+    if not user in hpass_dict: raise Exception('Login unsuccessful.')
     hpass, salt = hpass_dict[user].split('Partition 1')
     forcechng = False
     if 'forcechange' in salt:

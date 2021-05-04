@@ -1,6 +1,6 @@
-Sustav se temelji na datoteci passwords u kojoj su zapisani tuplovi (username, hash vrijednost, salt). Hash vrijednost se računa preko kriptografske funkcije sažetka SHA3_256 iz biblioteke pycryptodome na temelju user-ove lozinke konkatenirane s slučajnom vrijednost 'salt' od 16 bajtova. Tih 16 bajtova je također generiano na kriptografski siguran način metodom get_random_bytes iz pycrytodome. Pri svakoj promjeni lozinke, računa se novi salt te nova hash vrijednost. 
+Sustav se temelji na datoteci passwords u kojoj su zapisani tuplovi (username, hash vrijednost, salt). Hash vrijednost se računa preko kriptografske funkcije sažetka scrypt iz biblioteke pycryptodome na temelju user-ove lozinke te slučajne vrijednost 'salt' od 16 bajtova. Tih 16 bajtova je također generiano na kriptografski siguran način metodom get_random_bytes iz pycrytodome. Pri svakoj promjeni lozinke, računa se novi salt te nova hash vrijednost. Bitno je da tu koristimo funkciju scrypt a ne recimo SHA256 jer za hashiranje lozinki mora se koristiti funkcija sažetka koju se relativno teško računa, SHA256 se računa jako efikasno te je iz tog razloga podložna brute force napadima isprobavanja lozinke.
 
-User se uspješno ulogira u sustav alatom login ako se vrijednost sažetka unešene lozinke konkatenirane s zapisanim saltom podudara sa vrijednosti sažetka iz datoteke passwords.
+User se uspješno ulogira u sustav alatom login ako se vrijednost sažetka unešene lozinke te zapisane salt vrijednosti podudara sa vrijednosti sažetka iz datoteke passwords.
 Forsiranje promjene lozinke implementirano je tako da se u datoteci zapis dotičnog user-a označi sa zastavicom koja sustavu govori da forsira promjenu lozinke prilikom sljedećeg uspješnog logina (tom prilikom se ta zastavica i briše iz datoteke)
 
 Zaštite navedene na predavanjima, te jesam li ih implementirao ili ne:
@@ -8,11 +8,11 @@ Zaštite navedene na predavanjima, te jesam li ih implementirao ili ne:
 - Na disk se pohranjuju slučajna vrijednost i rezultat kriptografske funkcije
 sažetka od (lozinka + slučajna vrijednost)
 
-Ovu zaštitu jesam implementirao, jer kako datoteka passwords može dopasti u ruke napadača jako je bitno da bude virtualno nemoguće doći do lozinki preko onog što se nalazi u toj datoteci. Kako su kriptografske funkcije sažetka "one way only", na temelju njihove vrijednosti jako je teško išta reći o početnoj vrijednosti, što je za ovu primjenu točno ono što trebamo. Slučajnu vrijednost ili salt ovdije koristimo kako napadač ne bi mogao preko "rainbow tables" uspjeti povezati hash vrijednosti s čestim lozinkama. Zbog korištenja salta taj napad nije moguć jer bi to značilo da bi za svaku lozinku koju želi isprobati morao izračunati hash vrijednosti sa svim mogućim kombinacijama salt vrijednosti. Korištenje slučajne vrijednosti također napadaču onemogućava da sazna koji korisnici imaju jednake lozinke.
+Ovu zaštitu jesam implementirao, jer kako datoteka passwords može dopasti u ruke napadača jako je bitno da bude virtualno nemoguće doći do lozinki preko onog što se nalazi u toj datoteci. Kako su kriptografske funkcije sažetka "one way only", na temelju njihove vrijednosti jako je teško išta reći o početnoj vrijednosti, što je za ovu primjenu točno ono što trebamo. Slučajnu vrijednost ili salt ovdije koristimo kako napadač ne bi mogao preko "rainbow tables" uspjeti povezati hash vrijednosti s čestim lozinkama. Zbog korištenja salta taj napad nije moguć jer bi to značilo da bi za svaku lozinku koju želi isprobati morao izračunati hash vrijednosti sa svim mogućim kombinacijama salt vrijednosti. Korištenje slučajne vrijednosti također napadaču onemogućava da sazna koji korisnici imaju jednake lozinke. Za hashiranje lozninki i salta koristimo funkciju koja je komplicirana za izračunati i na taj način još više otežava napad pogađanja nečije lozinke grubom silom.
 
 - Forsiranje lozinki određene minimalne kompleksnosti 
 
-Ovu zaštitu sam isto do jedne mjere implementirao, naime sustav se buni ako se pokuša postaviti lozinka kraća od 3 znaka. Inače bi forsirao i više znakova ali mislim da je vama lakše testirati ako ne morate smisljati dugačke lozinke. Ako se mogu postaviti jako kratke lozinke to bi značilo da napadač mora isprobati malo kombinacija da sazna stvarnu lozinku nekog korisnika.
+Ovu zaštitu sam isto do jedne mjere implementirao, naime sustav se buni ako se pokuša postaviti lozinka kraća od 3 znaka. Inače bi forsirao i više znakova ali mislim da je vama lakše testirati ako ne morate smisljati dugačke lozinke. Ako se mogu postaviti jako kratke lozinke to bi značilo da napadač mora isprobati malo kombinacija da sazna stvarnu lozinku nekog korisnika. Također treba se postaviti i nekakva provjera da lozinke sadrže barem jedno veliko slovo, barem jedan broj itd. ali za svrhe lakog testiranja ta ograničenja nisam implementirao.
 
 - Nakon svakog neuspjelog pokušaja upisivanja lozinke povećava se vrijeme
 čekanja
@@ -26,4 +26,12 @@ Ovo nisam implementirao iz istog razloga koji je naveden i za zaštitu iznad, te
 
 - Administrator može forsirati zamjenu lozinke
 
-implementirano jer tako i napisano u zadatku.
+implementirano jer je tako i napisano u zadatku.
+
+- Dok korisnik upisuje lozinku ona se ne ispisuje na ekranu
+
+implementirano.
+
+- Periodička promjena lozinke
+
+može se implementirati redovitim pokretanje forcepass akcije usermgmt alata
