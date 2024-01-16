@@ -1,0 +1,18 @@
+1. zadatak:
+ping -c 3 10.5.5.185
+ping -c 3 mail.fer.hr
+ping -c 3 161.53.19.1
+ping -c 3 imunes.net
+
+2. zadatak:
+watch -n 0.5 netstat -ant
+sudo nmap -sT 10.5.5.185
+sudo nmap -sU 10.5.5.185
+sudo nmap -sS 10.5.5.185
+sudo nmap -O 10.5.5.185
+sudo nmap -sV 10.5.5.185
+sudo nmap -A 10.5.5.185
+
+3.zadatak:
+
+Naredbe koje su opisane u laboratorijsko vježbi za pokretanje skripti FW.sh i FW_int.sh te njihovo testiranje.

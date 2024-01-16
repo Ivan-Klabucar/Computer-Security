@@ -1,0 +1,195 @@
+
+Starting FW...
+... anti-spoofing rule (eth0)
+... accept all on loopback
+... ssh access to firewall only from int1
+... firewall uses one of the machines on internal network for DNS
+... RIP on FWs external interface
+... RIP on FWs internal interface
+... mail relay on DMZ can accept connections from hosts on the Internet
+... mail relay needs DNS and can connect to mail servers on the Internet
+iptables v1.6.0: unknown option "--dport"
+Try `iptables -h' or 'iptables --help' for more information.
+iptables v1.6.0: unknown option "--dport"
+Try `iptables -h' or 'iptables --help' for more information.
+... web server on DMZ must be reachable from the Internet
+... SSH Access to mail-relay (on DMZ) is permitted only on port 1111
+... access from the internal NAT to the Internet
+
+Starting FW_int...
+... no need to translate between DMZ and internal net
+... translate source address for outgoing connections
+... anti spoofing rule (eth0)
+... loopback
+... SSH Access to firewall FW_int is permitted only from int1 (on LAN)
+... SSH Access to mail (on LAN) is permitted only from mail-relay (on DMZ)
+... permit a mail relay located on DMZ to connect to internal mail server
+... permit access from LAN to Internet and DMZ
+
+*****
+* int1 (LAN) --> web server (DMZ)
+* ftp, ssh and http should be open (other ports are closed)
+*
+20/tcp  closed ftp-data
+21/tcp  open   ftp
+22/tcp  open   ssh
+23/tcp  closed telnet
+24/tcp  closed priv-mail
+25/tcp  closed smtp
+53/tcp  closed domain
+80/tcp  open   http
+443/tcp closed https
+
+*****
+* int1 (LAN) --> mail-relay (DMZ)
+* ssh and smtp should be open (other ports are closed)
+*
+20/tcp  closed ftp-data
+21/tcp  closed ftp
+22/tcp  open   ssh
+23/tcp  closed telnet
+24/tcp  closed priv-mail
+25/tcp  open   smtp
+53/tcp  closed domain
+80/tcp  closed http
+443/tcp closed https
+
+*****
+* int1 (LAN) --> mail (LAN)
+* ssh, telnet and smtp should be open (other ports are closed)
+*
+20/tcp  closed ftp-data
+21/tcp  closed ftp
+22/tcp  open   ssh
+23/tcp  open   telnet
+24/tcp  closed priv-mail
+25/tcp  open   smtp
+53/tcp  closed domain
+80/tcp  closed http
+443/tcp closed https
+
+*****
+* int1 (LAN) --> FW
+* only ssh should be open (other ports are filtered)
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  open     ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* int2 (LAN) --> FW
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> web server (DMZ)
+* http should be open, https closed (other ports are filtered)
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  open     http
+443/tcp closed   https
+
+*****
+* pc (Internet) --> mail-relay (DMZ)
+* smtp should be open (other ports are filtered)
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  open     smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> mail (LAN)
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> NAT mail (LAN)
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> FW (eth0)
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> FW (eth1)
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https
+
+*****
+* pc (Internet) --> FW_int
+* everything should be filtered
+*
+20/tcp  filtered ftp-data
+21/tcp  filtered ftp
+22/tcp  filtered ssh
+23/tcp  filtered telnet
+24/tcp  filtered priv-mail
+25/tcp  filtered smtp
+53/tcp  filtered domain
+80/tcp  filtered http
+443/tcp filtered https

