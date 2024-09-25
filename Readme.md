@@ -1,3 +1,5 @@
-# Computer Security
+# Computer Security – ID 209718
 
-Laboratory exercises for the Computer Security course.
+### University of Zagreb – Faculty of Electrical Engineering and Computing
+
+Laboratory exercise solutions.
